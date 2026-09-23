@@ -1,0 +1,21 @@
+{
+    // The accessibility mod loads here. insurgence_compat.rb must stay FIRST:
+    // it disables Insurgence's mode-7 camera, which crashes this engine.
+    "preloadScript": ["insurgence_compat.rb", "accessibility/preload_access.rb"],
+
+    // Insurgence is RPG Maker XP / RGSS 1.02 (its Game.ini names RGSS102E.dll) and its
+    // data lives inside Game.rgssad, which mkxp-z reads natively.
+    "rgssVersion": 1,
+
+    // Insurgence's music is 1136 MIDI files, so it needs a soundfont to make any sound.
+    "midiSoundFont": "soundfont.sf2",
+
+    "fullscreen": false,
+    "winResizable": true,
+
+    // Set consoleOutput to true if the game will not start: it opens a window that
+    // prints what the engine is doing, including any error.
+    "consoleOutput": false,
+    "printFPS": false,
+    "maxFPS": 60
+}

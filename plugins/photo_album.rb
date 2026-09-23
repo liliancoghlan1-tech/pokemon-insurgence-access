@@ -1,0 +1,66 @@
+# Photo album (the "Fotos del equipo" plugin, AlbumFotos_Scene): a 2x2 grid of saved screenshots over
+# pages, cursor in @photo (0-3) and @page, with @viendofoto set while one is enlarged. The photos are
+# screenshots -- no text to read -- so what a player can actually use is the slot's number and the date,
+# which the plugin stores in the FILENAME as capture###_dd_mm_yyyy.png.
+#
+# pbUpdateAlbum is a modal `loop do` in both copies (it calls Input.update every iteration), so the cursor
+# is polled each frame through SceneWatcher rather than hooked.
+#
+# The copies differ only in the LOOKUP: one keeps a cached listing behind obtener_archivo_captura, the
+# other globs a fixed ALBUM_DIR. The naming scheme is the same in both, and the fallback caches its own
+# listing because this runs per frame.
+module PokeAccess
+  module PhotoAlbum
+    # The album's files, listed once per scene. The plugin does not add photos while the album is open.
+    def self.files(scene)
+      cached = PokeAccess.ivar(scene, :@pa_album_files)
+      return cached if cached.is_a?(Array)
+      dir = (::ALBUM_DIR rescue "Fotos")
+      list = (Dir.glob(File.join(dir, "capture*.png")).sort rescue [])
+      scene.instance_variable_set(:@pa_album_files, list)
+      list
+    end
+
+    # The file behind a slot, by whichever route this copy offers, or nil for an empty slot.
+    # The lookup logs rather than swallowing: respond_to? has already said the method is there, so a raise
+    # is a real fault and hiding it would report every photo as an empty slot.
+    def self.file_for(scene, index)
+      if scene.respond_to?(:obtener_archivo_captura, true)
+        return (scene.send(:obtener_archivo_captura, index) rescue (PokeAccess.log_once("album_lookup", $!); nil))
+      end
+      tag = sprintf("capture%03d", index)
+      files(scene).find { |f| f.include?(tag) }
+    end
+
+    # The date a capture filename ends with, or nil. Read through to_i because the filename pads to two
+    # digits and the screen prints the bare number.
+    def self.date_of(file)
+      parts = File.basename(file.to_s, ".png").split("_")
+      return nil if parts.length < 3
+      "#{parts[-3].to_i}/#{parts[-2].to_i}/#{parts[-1].to_i}"
+    end
+
+    # What the focused slot is: a numbered photo with its date, or an empty slot, always with the page.
+    def self.text(scene)
+      page  = PokeAccess.ivar_i(scene, :@page)
+      photo = PokeAccess.ivar_i(scene, :@photo)
+      pages = (PokeAccess.ivar(scene, :@numpages) || 1).to_i
+      index = page * 4 + photo
+      file  = file_for(scene, index)
+      head = if file
+               d = date_of(file)
+               t = PokeAccess::I18n.t(:alb_photo, :n => index + 1, :tot => PokeAccess.ivar_i(scene, :@numcapturas))
+               d ? "#{t}, #{d}" : t
+             else
+               PokeAccess::I18n.t(:alb_empty)
+             end
+      "#{head}, #{PokeAccess::I18n.t(:alb_page, :n => page + 1, :tot => pages)}"
+    end
+  end
+
+  PhotoAlbumReader = SceneWatcher.reader("AlbumFotos_Scene", :pbUpdateAlbum, :photo_album, :optional => true) do |s|
+    viewing = (s.instance_variable_get(:@viendofoto) rescue false)
+    [[PokeAccess.ivar_i(s, :@page), PokeAccess.ivar_i(s, :@photo), viewing],
+     lambda { PokeAccess::PhotoAlbum.text(s) }]
+  end
+end

@@ -1,0 +1,5 @@
+# Store and check out every file exactly as it is here. The Ruby files came
+# from upstream with Unix line endings and the .bat files need Windows ones;
+# letting Git rewrite either direction makes diffs against upstream noisy and
+# has no upside.
+* -text

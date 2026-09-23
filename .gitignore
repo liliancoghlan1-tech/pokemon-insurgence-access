@@ -1,0 +1,9 @@
+# Steam Audio, ~50 MB per architecture, Valve's property.
+# Ships in the release download instead of in this repository.
+assets/x64/phonon.dll
+assets/x86/phonon.dll
+
+# Per-install state, never source.
+accessibility/data/
+*.log
+diag.txt
