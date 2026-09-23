@@ -33,8 +33,17 @@ hook to load into.
 
 ## Core changes — these are not Insurgence-specific
 
-45 files under `core/`. They would apply to any Essentials fangame the upstream
-mod supports.
+45 files under `core/`. They hook methods that exist across the Essentials
+fangames the upstream mod supports, so they should apply to those games too.
+
+**Tested on Insurgence only.** That is the one game any of this has actually
+been played on, start to finish. The hooks were checked by scanning other
+installs for the class and method names they bind to, which says a feature
+*can* bind, not that it behaves well once it does. Three of them are known to
+be gen-6 only and simply do nothing on the modern engine: the encounter-rate
+assist, the experience assist, and the catch-a-new-Pokémon Pokédex reader.
+The shared-experience assist finds its switch by name and only Insurgence has
+one, so that row hides itself elsewhere.
 
 ### Navigation
 

@@ -154,6 +154,17 @@ to attach when you report it.
 
 - Built and tested on **Insurgence 1.2.5**. Another version may move things the
   Insurgence-specific readers depend on.
+- **Insurgence is the only game this has been played on.** The changes under
+  `core/` are not Insurgence-specific and they hook methods that exist in the
+  other fangames the upstream mod supports, so in principle they apply there
+  too — but "in principle" is all that can honestly be claimed. Nobody has sat
+  down and played another game with this fork. If you try one and something
+  reads worse than it does with upstream PokeEssentialsAccess, that is worth an
+  issue, and it is not a surprise.
+- **It will not disturb your other games.** Each game folder holds its own copy
+  of the mod, and this pack only ever installs into the Insurgence folder you
+  point it at. If you already run PokeEssentialsAccess on other fangames, those
+  installs are untouched and keep whatever version they have.
 - The **postgame** has had far less use than the main story.
 - The mod speaks six languages, but the lines added by this fork — the puzzle
   readers, the walkthrough, the newer navigation wording — exist in **English
